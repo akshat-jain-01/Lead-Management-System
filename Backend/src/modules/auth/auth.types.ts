@@ -15,3 +15,9 @@ export interface RegisterInput {
   password: string;
   role?: UserRole;
 }
+
+
+export interface LoginInput {
+  email: string;
+  password: string;
+}
