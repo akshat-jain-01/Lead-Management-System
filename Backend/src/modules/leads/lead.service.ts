@@ -39,6 +39,11 @@ export const getAllLeads = async ( userId: string, role: string, query: LeadQuer
 
   const filters: any = {};
 
+  console.log("ROLE:", role);
+
+  console.log("USER ID:", userId);
+
+  console.log(filters);
   // RBAC FILTER
 
   if (role !== "admin") {

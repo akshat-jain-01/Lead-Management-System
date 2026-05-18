@@ -22,103 +22,189 @@ import {
 import type { Lead } from "../types/lead.types";
 
 const Dashboard = () => {
+
   const navigate = useNavigate();
 
-  const [leads, setLeads] = useState<Lead[]>([]);
+  const [leads, setLeads] =
+    useState<Lead[]>([]);
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] =
+    useState(false);
 
-  const [search, setSearch] = useState("");
+  const [search, setSearch] =
+    useState("");
 
-  const [status, setStatus] = useState("");
+  const [status, setStatus] =
+    useState("");
 
-  const [source, setSource] = useState("");
+  const [source, setSource] =
+    useState("");
 
   // PAGINATION
 
-  const [page, setPage] = useState(1);
+  const [page, setPage] =
+    useState(1);
 
-  const [totalPages, setTotalPages] = useState(1);
+  const [totalPages, setTotalPages] =
+    useState(1);
 
   // FETCH LEADS
 
   const fetchAllLeads = async () => {
+
     try {
+
       setLoading(true);
 
-      const response = await getLeads({
-        page,
+      const response =
+        await getLeads({
 
-        limit: 5,
+          page,
 
-        search,
+          limit: 5,
 
-        status,
+          search,
 
-        source,
-      });
+          status,
 
-      setLeads(response.data.data);
+          source,
 
-      setTotalPages(response.data.pagination.pages);
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to fetch leads");
-    } finally {
-      setLoading(false);
+        });
+
+      setLeads(
+        response.data.data || []
+      );
+
+      // FIXED PAGINATION
+
+      setTotalPages(
+        response.data.pages || 1
+      );
+
     }
+
+    catch (error: any) {
+
+      toast.error(
+
+        error.response?.data?.message
+        || "Failed to fetch leads"
+
+      );
+
+    }
+
+    finally {
+
+      setLoading(false);
+
+    }
+
   };
 
+  // FETCH WHEN PAGE/FILTER CHANGES
+
   useEffect(() => {
+
     fetchAllLeads();
-  }, [page, search, status, source]);
 
-  // RESET PAGE ON FILTER CHANGE
-
-  useEffect(() => {
-    setPage(1);
-  }, [search, status, source]);
+  }, [
+    page,
+    search,
+    status,
+    source,
+  ]);
 
   // LOGOUT
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
 
-    toast.success("Logged out successfully");
+    localStorage.removeItem(
+      "token"
+    );
+
+    toast.success(
+      "Logged out successfully"
+    );
 
     navigate("/auth");
+
   };
 
   // CREATE LEAD
 
-  const handleCreateLead = async (data: any) => {
+  const handleCreateLead = async (
+    data: any
+  ) => {
+
     try {
+
       await createLead(data);
 
-      toast.success("Lead created successfully");
+      toast.success(
+        "Lead created successfully"
+      );
 
       fetchAllLeads();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to create lead");
+
     }
+
+    catch (error: any) {
+
+      toast.error(
+
+        error.response?.data?.message
+        || "Failed to create lead"
+
+      );
+
+    }
+
   };
 
   // UPDATE LEAD
 
-  const handleUpdateLead = async (lead: Lead) => {
-    const newName = prompt("Enter lead name", lead.name);
+  const handleUpdateLead = async (
+    lead: Lead
+  ) => {
 
-    const newEmail = prompt("Enter lead email", lead.email);
+    const newName =
+      prompt(
+        "Enter lead name",
+        lead.name
+      );
 
-    const newStatus = prompt("Enter status", lead.status);
+    const newEmail =
+      prompt(
+        "Enter lead email",
+        lead.email
+      );
 
-    const newSource = prompt("Enter source", lead.source);
+    const newStatus =
+      prompt(
+        "Enter status",
+        lead.status
+      );
 
-    if (!newName || !newEmail || !newStatus || !newSource) {
+    const newSource =
+      prompt(
+        "Enter source",
+        lead.source
+      );
+
+    if (
+      !newName ||
+      !newEmail ||
+      !newStatus ||
+      !newSource
+    ) {
       return;
     }
 
     try {
+
       await updateLead(
+
         lead._id,
 
         {
@@ -126,41 +212,96 @@ const Dashboard = () => {
           email: newEmail,
           status: newStatus,
           source: newSource,
-        },
+        }
+
       );
 
-      toast.success("Lead updated successfully");
+      toast.success(
+        "Lead updated successfully"
+      );
 
       fetchAllLeads();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to update lead");
+
     }
+
+    catch (error: any) {
+
+      toast.error(
+
+        error.response?.data?.message
+        || "Failed to update lead"
+
+      );
+
+    }
+
   };
 
   // DELETE LEAD
 
-  const handleDeleteLead = async (id: string) => {
-    const confirmDelete = window.confirm(
-      "Are you sure you want to delete this lead?",
-    );
+  const handleDeleteLead = async (
+    id: string
+  ) => {
+
+    const confirmDelete =
+      window.confirm(
+        "Are you sure you want to delete this lead?"
+      );
 
     if (!confirmDelete) return;
 
     try {
+
       await deleteLead(id);
 
-      toast.success("Lead deleted successfully");
+      toast.success(
+        "Lead deleted successfully"
+      );
 
-      fetchAllLeads();
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || "Failed to delete lead");
+      // HANDLE LAST ITEM DELETE
+
+      if (
+        leads.length === 1 &&
+        page > 1
+      ) {
+
+        setPage((prev) => prev - 1);
+
+      }
+
+      else {
+
+        fetchAllLeads();
+
+      }
+
     }
+
+    catch (error: any) {
+
+      toast.error(
+
+        error.response?.data?.message
+        || "Failed to delete lead"
+
+      );
+
+    }
+
   };
 
+  // EXPORT CSV
+
   const handleExportCSV = () => {
-    const headers = [["Name", "Email", "Status", "Source"]];
+
+    const headers = [
+
+      ["Name", "Email", "Status", "Source"],
+
+    ];
 
     const rows = leads.map((lead) => [
+
       lead.name,
 
       lead.email,
@@ -168,38 +309,53 @@ const Dashboard = () => {
       lead.status,
 
       lead.source,
+
     ]);
 
-    const csvContent = [...headers, ...rows]
+    const csvContent =
+
+      [
+        ...headers,
+        ...rows,
+      ]
 
       .map((e) => e.join(","))
 
       .join("\n");
 
     const blob = new Blob(
+
       [csvContent],
 
       {
         type: "text/csv;charset=utf-8;",
-      },
+      }
+
     );
 
-    const url = URL.createObjectURL(blob);
+    const url =
+      URL.createObjectURL(blob);
 
-    const link = document.createElement("a");
+    const link =
+      document.createElement("a");
 
     link.href = url;
 
-    link.setAttribute("download", "leads.csv");
+    link.setAttribute(
+      "download",
+      "leads.csv"
+    );
 
     document.body.appendChild(link);
 
     link.click();
 
     document.body.removeChild(link);
+
   };
 
   return (
+
     <div
       className="
         min-h-screen
@@ -208,29 +364,53 @@ const Dashboard = () => {
         md:p-8
       "
     >
-      <DashboardHeader onLogout={handleLogout} onExport={handleExportCSV} />
 
-      <CreateLeadForm onCreate={handleCreateLead} />
+      <DashboardHeader
+
+        onLogout={handleLogout}
+
+        onExport={handleExportCSV}
+
+      />
+
+      <CreateLeadForm
+        onCreate={handleCreateLead}
+      />
 
       <LeadFilters
+
         search={search}
+
         status={status}
+
         source={source}
+
         setSearch={setSearch}
+
         setStatus={setStatus}
+
         setSource={setSource}
+
+        setPage={setPage}
+
       />
 
       <LeadsTable
+
         leads={leads}
+
         loading={loading}
+
         onUpdate={handleUpdateLead}
+
         onDelete={handleDeleteLead}
+
       />
 
       {/* PAGINATION */}
 
       <div
+
         className="
           flex
           justify-center
@@ -239,10 +419,23 @@ const Dashboard = () => {
           mt-8
           flex-wrap
         "
+
       >
+
         <button
-          onClick={() => setPage((prev) => Math.max(prev - 1, 1))}
-          disabled={page === 1}
+
+          onClick={() => {
+
+            if (page > 1) {
+
+              setPage(page - 1);
+
+            }
+
+          }}
+
+          disabled={page <= 1}
+
           className="
             bg-black
             text-white
@@ -251,22 +444,40 @@ const Dashboard = () => {
             rounded-lg
             disabled:opacity-50
           "
+
         >
+
           Prev
+
         </button>
 
         <span
+
           className="
             font-semibold
             text-lg
           "
+
         >
+
           Page {page} of {totalPages}
+
         </span>
 
         <button
-          onClick={() => setPage((prev) => Math.min(prev + 1, totalPages))}
-          disabled={page === totalPages}
+
+          onClick={() => {
+
+            if (page < totalPages) {
+
+              setPage(page + 1);
+
+            }
+
+          }}
+
+          disabled={page >= totalPages}
+
           className="
             bg-black
             text-white
@@ -275,12 +486,19 @@ const Dashboard = () => {
             rounded-lg
             disabled:opacity-50
           "
+
         >
+
           Next
+
         </button>
+
       </div>
+
     </div>
+
   );
+
 };
 
 export default Dashboard;

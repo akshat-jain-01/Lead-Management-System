@@ -12,6 +12,8 @@ type Props = {
 
   setSource: any;
 
+  setPage: any;
+
 };
 
 const LeadFilters = ({
@@ -27,6 +29,8 @@ const LeadFilters = ({
   setStatus,
 
   setSource,
+
+  setPage,
 
 }: Props) => {
 
@@ -58,9 +62,13 @@ const LeadFilters = ({
 
         value={search}
 
-        onChange={(e) =>
-          setSearch(e.target.value)
-        }
+        onChange={(e) => {
+
+          setSearch(e.target.value);
+
+          setPage(1);
+
+        }}
 
         className="
           border
@@ -79,9 +87,13 @@ const LeadFilters = ({
 
         value={status}
 
-        onChange={(e) =>
-          setStatus(e.target.value)
-        }
+        onChange={(e) => {
+
+          setStatus(e.target.value);
+
+          setPage(1);
+
+        }}
 
         className="
           border
@@ -119,9 +131,13 @@ const LeadFilters = ({
 
         value={source}
 
-        onChange={(e) =>
-          setSource(e.target.value)
-        }
+        onChange={(e) => {
+
+          setSource(e.target.value);
+
+          setPage(1);
+
+        }}
 
         className="
           border

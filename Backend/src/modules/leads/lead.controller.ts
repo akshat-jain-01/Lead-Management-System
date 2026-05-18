@@ -37,6 +37,7 @@ export const createLeadController = asyncHandler(
 export const getAllLeadsController = asyncHandler( async ( req: Request, res: Response ) => {
 
       const result = await getAllLeads( req.user!._id.toString(), req.user!.role, req.query );
+      console.log(req.user);
 
       res.status(200).json({
         success: true,
