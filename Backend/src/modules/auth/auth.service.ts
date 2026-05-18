@@ -47,7 +47,7 @@ return {
 
 export const loginUser = async ( body: LoginInput ) => {
 
-  const user = await User.findOne({ email: body.email });
+  const user = await User.findOne({ email: body.email }).select("+password");
 
   if (!user) {
     throw new ApiError("Invalid email or password", 401);
