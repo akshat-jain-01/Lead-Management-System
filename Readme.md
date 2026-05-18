@@ -6,6 +6,16 @@ Designed to simulate a real-world CRM workflow where teams can manage leads effi
 
 ---
 
+# 🌐 Live Demo
+
+🚀 Frontend:
+https://lead-management-system-smoky.vercel.app
+
+⚙️ Backend API:
+https://lead-management-system-9clf.onrender.com
+
+---
+
 # ✨ Features
 
 ## 🔐 Authentication & Authorization
